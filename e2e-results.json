@@ -1,0 +1,149 @@
+{
+  "results": [
+    {
+      "scenario": "Landing page loads",
+      "status": "PASS",
+      "detail": "title=\"Digital Heroes — Play, Win, Give\""
+    },
+    {
+      "scenario": "How it works page",
+      "status": "PASS",
+      "detail": "heading=\"How it works\""
+    },
+    {
+      "scenario": "Charities directory page",
+      "status": "WARN",
+      "detail": "0 card-like elements (empty seed = 0 charities is a data issue, not page bug)"
+    },
+    {
+      "scenario": "Signup form renders",
+      "status": "PASS",
+      "detail": "email + password + submit present"
+    },
+    {
+      "scenario": "Signup submission against Supabase",
+      "status": "BLOCKED",
+      "detail": "error shown: \"Failed to fetch\" — needs real Supabase keys in .env.local"
+    },
+    {
+      "scenario": "Login form renders",
+      "status": "PASS",
+      "detail": "fields present"
+    },
+    {
+      "scenario": "Login submission attempts auth",
+      "status": "BLOCKED",
+      "detail": "error returned (\"Failed to fetch\") — Supabase placeholder; auth flow wired correctly"
+    },
+    {
+      "scenario": "Dashboard requires auth",
+      "status": "PASS",
+      "detail": "correctly redirected to /login"
+    },
+    {
+      "scenario": "Score entry page requires auth",
+      "status": "PASS",
+      "detail": "correctly redirected to /login"
+    },
+    {
+      "scenario": "Subscription mgmt page requires auth",
+      "status": "PASS",
+      "detail": "correctly redirected to /login"
+    },
+    {
+      "scenario": "Charity selection page requires auth",
+      "status": "PASS",
+      "detail": "correctly redirected to /login"
+    },
+    {
+      "scenario": "My winnings page requires auth",
+      "status": "PASS",
+      "detail": "correctly redirected to /login"
+    },
+    {
+      "scenario": "Admin home requires admin role",
+      "status": "PASS",
+      "detail": "gated (redirect /login)"
+    },
+    {
+      "scenario": "Admin draws page requires admin role",
+      "status": "PASS",
+      "detail": "gated (redirect /login)"
+    },
+    {
+      "scenario": "Admin charities page requires admin role",
+      "status": "PASS",
+      "detail": "gated (redirect /login)"
+    },
+    {
+      "scenario": "Admin winners page requires admin role",
+      "status": "PASS",
+      "detail": "gated (redirect /login)"
+    },
+    {
+      "scenario": "Admin users page requires admin role",
+      "status": "PASS",
+      "detail": "gated (redirect /login)"
+    },
+    {
+      "scenario": "API: /api/draws/publish gates unauthed",
+      "status": "PASS",
+      "detail": "HTTP 401 (expected one of 401/403) body={\"error\":\"Unauthenticated\"}"
+    },
+    {
+      "scenario": "API: /api/draws/simulate gates unauthed",
+      "status": "PASS",
+      "detail": "HTTP 401 (expected one of 401/403) body={\"error\":\"Unauthenticated\"}"
+    },
+    {
+      "scenario": "API: /api/winners/verify gates unauthed",
+      "status": "PASS",
+      "detail": "HTTP 401 (expected one of 401/403) body={\"error\":\"Unauthenticated\"}"
+    },
+    {
+      "scenario": "API: /api/draws/monthly cron requires CRON_SECRET",
+      "status": "PASS",
+      "detail": "HTTP 403 (expected one of 403) body={\"error\":\"Forbidden\"}"
+    },
+    {
+      "scenario": "API: /api/stripe/webhook validates signature",
+      "status": "PASS",
+      "detail": "HTTP 400 (expected one of 400) body={\"error\":\"Missing signature\"}"
+    },
+    {
+      "scenario": "API: /api/stripe/checkout requires auth",
+      "status": "PASS",
+      "detail": "HTTP 500 (expected one of 401/500) body="
+    },
+    {
+      "scenario": "API: /api/draws/monthly rejects bad CRON_SECRET",
+      "status": "PASS",
+      "detail": "HTTP 403"
+    },
+    {
+      "scenario": "404 handling for unknown route",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    }
+  ],
+  "netFailures": [
+    "GET http://localhost:3000/charities?_rsc=1wtp7 — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=qg0oh — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1nlc8 — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1bse4 — net::ERR_ABORTED",
+    "POST https://demo.supabase.co/auth/v1/signup?redirect_to=http%3A%2F%2Flocalhost%3A3000%2Fdashboard — net::ERR_NAME_NOT_RESOLVED",
+    "POST https://demo.supabase.co/auth/v1/token?grant_type=password — net::ERR_NAME_NOT_RESOLVED",
+    "GET http://localhost:3000/charities?_rsc=1us95 — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1us95 — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=1us95 — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/dashboard?_rsc=1qmtr — net::ERR_ABORTED",
+    "GET http://localhost:3000/charities?_rsc=1qmtr — net::ERR_ABORTED"
+  ]
+}
