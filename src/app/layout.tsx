@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Digital Heroes — Play, Win, Give",
+  title: "Digital Heroes TEST — Play, Win, Give",
   description: "Track scores. Win monthly. Power charities you love.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000")
 };

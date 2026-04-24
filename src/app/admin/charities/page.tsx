@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Charity } from "@/types/db";
 
@@ -8,11 +8,12 @@ export default function AdminCharities() {
   const [list, setList] = useState<Charity[]>([]);
   const [form, setForm] = useState({ name: "", slug: "", description: "", image_url: "", website: "", is_featured: false });
 
-  async function load() {
+  const load = useCallback(async () => {
     const { data } = await supabase.from("charities").select("*").order("created_at", { ascending: false });
     setList((data ?? []) as Charity[]);
-  }
-  useEffect(() => { load(); }, []);
+  }, [supabase]);
+
+  useEffect(() => { load(); }, [load]);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { validateScore, applyRollingFive, type ScoreEntry } from "@/lib/scores";
 import { Trash2 } from "lucide-react";
@@ -10,11 +10,12 @@ export default function ScoresPage() {
   const [score, setScore] = useState(20); const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [err, setErr] = useState<string | null>(null); const [busy, setBusy] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     const { data } = await supabase.from("scores").select("*").order("played_on", { ascending: false });
     setScores((data ?? []) as ScoreEntry[]);
-  }
-  useEffect(() => { load(); }, []);
+  }, [supabase]);
+
+  useEffect(() => { load(); }, [load]);
 
   async function add(e: React.FormEvent) {
     e.preventDefault(); setErr(null);

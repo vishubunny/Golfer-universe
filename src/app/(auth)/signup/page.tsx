@@ -2,24 +2,40 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); const [err, setErr] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
-    e.preventDefault(); setLoading(true); setErr(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { data: { full_name: name }, emailRedirectTo: `${location.origin}/dashboard` }
-    });
-    setLoading(false);
-    if (error) return setErr(error.message);
-    router.push("/dashboard/subscription"); router.refresh();
+    e.preventDefault();
+    setLoading(true);
+    setErr(null);
+
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, full_name: name })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErr(data.error || "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard/subscription");
+      router.refresh();
+    } catch (error) {
+      setErr("An error occurred. Please try again.");
+      setLoading(false);
+    }
   }
   return (
     <div className="max-w-md mx-auto px-6 py-20">

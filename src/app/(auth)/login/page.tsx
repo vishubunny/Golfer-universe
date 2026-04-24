@@ -2,21 +2,41 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 
 function LoginForm() {
   const router = useRouter();
-  const next = useSearchParams().get("next") ?? "/dashboard";
-  const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
-  const [err, setErr] = useState<string | null>(null); const [loading, setLoading] = useState(false);
+  const next = useSearchParams().get("next");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
-    e.preventDefault(); setLoading(true); setErr(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return setErr(error.message);
-    router.push(next); router.refresh();
+    e.preventDefault();
+    setLoading(true);
+    setErr(null);
+    
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErr(data.error || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      const destination = next ?? (data.user?.role === "admin" ? "/admin" : "/dashboard");
+      router.push(destination);
+      router.refresh();
+    } catch (error) {
+      setErr("An error occurred. Please try again.");
+      setLoading(false);
+    }
   }
   return (
     <form onSubmit={submit} className="space-y-4 glass p-6">

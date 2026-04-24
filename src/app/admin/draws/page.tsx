@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatCents, currentPeriod } from "@/lib/utils";
 import type { Draw } from "@/types/db";
@@ -12,11 +12,12 @@ export default function AdminDraws() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     const { data } = await supabase.from("draws").select("*").order("period", { ascending: false });
     setDraws((data ?? []) as Draw[]);
-  }
-  useEffect(() => { load(); }, []);
+  }, [supabase]);
+
+  useEffect(() => { load(); }, [load]);
 
   async function call(action: "simulate" | "publish", drawId?: string) {
     setBusy(true); setMsg(null);

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatCents } from "@/lib/utils";
 import type { Winner } from "@/types/db";
@@ -9,14 +9,15 @@ export default function WinningsPage() {
   const [rows, setRows] = useState<(Winner & { draws: { period: string } })[]>([]);
   const [uploading, setUploading] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     const { data } = await supabase
       .from("winners")
       .select("*, draws(period)")
       .order("created_at", { ascending: false });
     setRows((data ?? []) as any);
-  }
-  useEffect(() => { load(); }, []);
+  }, [supabase]);
+
+  useEffect(() => { load(); }, [load]);
 
   async function upload(winnerId: string, file: File) {
     setUploading(winnerId);

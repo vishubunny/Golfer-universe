@@ -13,15 +13,26 @@ export function createClient() {
     auth: {
       async getUser() {
         const u = await getServerUser();
-        return { data: { user: u ? { id: u.id, email: u.email, user_metadata: {} } : null }, error: null };
+        return {
+          data: {
+            user: u ? { id: u.id, email: u.email, role: u.role, user_metadata: {} } : null
+          },
+          error: null
+        };
       },
       async signInWithPassword({ email, password }: { email: string; password: string }) {
         const r = await loginUser(email, password);
-        return { data: r.user ? { user: { id: r.user.id, email: r.user.email } } : null, error: r.error ? { message: r.error } : null };
+        return {
+          data: r.user ? { user: { id: r.user.id, email: r.user.email, role: r.user.role } } : null,
+          error: r.error ? { message: r.error } : null
+        };
       },
       async signUp({ email, password, options }: { email: string; password: string; options?: { data?: { full_name?: string }; [k: string]: any } }) {
         const r = await signupUser(email, password, options?.data?.full_name);
-        return { data: r.user ? { user: { id: r.user.id, email: r.user.email } } : null, error: r.error ? { message: r.error } : null };
+        return {
+          data: r.user ? { user: { id: r.user.id, email: r.user.email, role: r.user.role } } : null,
+          error: r.error ? { message: r.error } : null
+        };
       },
       async signOut() { clearSessionCookie(); return { error: null }; }
     },

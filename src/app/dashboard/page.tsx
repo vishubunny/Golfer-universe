@@ -1,30 +1,55 @@
-import { createClient } from "@/lib/supabase/server";
+import { getServerUser } from "@/lib/auth";
+import { getDb } from "@/lib/db";
 import { formatCents } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function DashboardHome() {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getServerUser();
   if (!user) return null;
 
-  const [{ data: profile }, { data: sub }, { data: scores }, { data: winners }] = await Promise.all([
-    supabase.from("profiles").select("*, charities(name)").eq("id", user.id).single(),
-    supabase.from("subscriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    supabase.from("scores").select("*").eq("user_id", user.id).order("played_on", { ascending: false }),
-    supabase.from("winners").select("*").eq("user_id", user.id)
-  ]);
+  const db = getDb();
+
+  // Get user profile
+  const profile = db.prepare(`
+    SELECT p.*, c.name as charity_name 
+    FROM profiles p 
+    LEFT JOIN charities c ON p.charity_id = c.id 
+    WHERE p.id = ?
+  `).get(user.id) as any;
+
+  // Get subscription
+  const subscription = db.prepare(`
+    SELECT * FROM subscriptions 
+    WHERE user_id = ? 
+    ORDER BY created_at DESC 
+    LIMIT 1
+  `).get(user.id) as any;
+
+  // Get scores
+  const scores = db.prepare(`
+    SELECT * FROM scores 
+    WHERE user_id = ? 
+    ORDER BY played_on DESC
+  `).all(user.id) as any[];
+
+  // Get winners/winnings
+  const winners = db.prepare(`
+    SELECT * FROM winners 
+    WHERE user_id = ? 
+    ORDER BY created_at DESC
+  `).all(user.id) as any[];
 
   const totalWon = (winners ?? []).reduce((s, w) => s + (w.prize_cents ?? 0), 0);
-  const status = sub?.status ?? "none";
+  const status = subscription?.status ?? "none";
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <Card title="Subscription" cta={<Link href="/dashboard/subscription" className="text-brand-100 text-sm">Manage →</Link>}>
         <p className="text-2xl font-bold capitalize">{status}</p>
-        {sub?.current_period_end && <p className="text-muted text-sm mt-1">Renews {new Date(sub.current_period_end).toLocaleDateString()}</p>}
+        {subscription?.current_period_end && <p className="text-muted text-sm mt-1">Renews {new Date(subscription.current_period_end).toLocaleDateString()}</p>}
       </Card>
       <Card title="Charity" cta={<Link href="/dashboard/charity" className="text-brand-100 text-sm">Change →</Link>}>
-        <p className="text-2xl font-bold">{(profile as any)?.charities?.name ?? "Not selected"}</p>
+        <p className="text-2xl font-bold">{profile?.charity_name ?? "Not selected"}</p>
         <p className="text-muted text-sm mt-1">{profile?.charity_pct}% of subscription</p>
       </Card>
       <Card title="Recent scores" cta={<Link href="/dashboard/scores" className="text-brand-100 text-sm">Edit →</Link>}>

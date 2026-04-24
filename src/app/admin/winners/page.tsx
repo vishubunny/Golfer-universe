@@ -1,19 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatCents } from "@/lib/utils";
 
 export default function AdminWinners() {
   const supabase = createClient();
   const [rows, setRows] = useState<any[]>([]);
-  async function load() {
+  const load = useCallback(async () => {
     const { data } = await supabase
       .from("winners")
       .select("*, profiles(email, full_name), draws(period)")
       .order("created_at", { ascending: false });
     setRows(data ?? []);
-  }
-  useEffect(() => { load(); }, []);
+  }, [supabase]);
+
+  useEffect(() => { load(); }, [load]);
 
   async function review(id: string, status: "approved" | "rejected" | "paid") {
     await fetch("/api/winners/verify", { method: "POST", body: JSON.stringify({ id, status }) });

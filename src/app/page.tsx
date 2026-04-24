@@ -1,13 +1,20 @@
 "use client";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, Trophy, Sparkles } from "lucide-react";
+import { Flag, Heart, Trophy, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
     <>
       {/* HERO — charity-led, not golf-led (PRD §12) */}
       <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="absolute left-6 top-24 h-48 w-48 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute right-10 top-32 h-32 w-32 rounded-full border border-white/10 bg-accent/10" />
+          <div className="absolute bottom-12 left-1/2 h-[24rem] w-[24rem] -translate-x-1/2 rounded-full border border-white/10 opacity-40" />
+          <div className="absolute right-24 bottom-20 h-10 w-10 rounded-full border border-white/20 bg-white/10" />
+          <div className="absolute right-16 bottom-16 h-1.5 w-36 rounded-full bg-accent/20" />
+        </div>
         <div className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
@@ -22,13 +29,20 @@ export default function Home() {
               Subscribe, log your last 5 rounds, enter the monthly draw — and
               channel a portion of your subscription to the charity of your choice.
             </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 text-sm text-white/70">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+                <Flag className="size-4 text-accent" /> Tee off for impact
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+                <Heart className="size-4 text-white/80" /> Charity-focused golf
+              </div>
+            </div>
             <div className="mt-8 flex justify-center gap-3">
               <Link href="/signup" className="btn-primary">Subscribe & start playing</Link>
               <Link href="/charities" className="btn-ghost">Explore charities</Link>
             </div>
           </motion.div>
         </div>
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 size-[600px] rounded-full bg-brand/30 blur-[120px] -z-10" />
       </section>
 
       {/* HOW IT WORKS */}

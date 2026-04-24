@@ -9,20 +9,22 @@
 
 html, body { height: 100%; }
 body {
-  background: linear-gradient(180deg, #0B0B14 0%, #14102A 100%);
+  background: radial-gradient(circle at top center, rgba(124,58,237,0.15), transparent 18%),
+              radial-gradient(circle at bottom left, rgba(245,158,11,0.08), transparent 16%),
+              linear-gradient(180deg, #0B0B14 0%, #14102A 100%);
   color: var(--fg);
   font-family: Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 .glass {
-  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-[28px];
 }
 .btn {
   @apply inline-flex items-center justify-center font-medium rounded-xl px-5 py-2.5 transition;
 }
-.btn-primary { @apply btn bg-brand text-white hover:bg-brand-600; }
-.btn-ghost   { @apply btn bg-white/5 text-white hover:bg-white/10; }
+.btn-primary { @apply btn text-white bg-gradient-to-r from-brand to-accent shadow-2xl shadow-brand/20 hover:from-brand-600 hover:to-accent/80; }
+.btn-ghost   { @apply btn bg-white/5 text-white hover:bg-white/10 border border-white/10; }
 .input       { @apply w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-white placeholder:text-white/40 focus:border-brand focus:outline-none; }
 .label       { @apply block text-sm font-medium text-white/80 mb-1.5; }
 .h-display   { @apply text-4xl md:text-6xl font-bold tracking-tight; }

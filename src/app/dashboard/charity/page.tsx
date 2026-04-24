@@ -22,7 +22,7 @@ export default function CharityPage() {
         if (p) { setSelected(p.charity_id); setPct(p.charity_pct); }
       }
     })();
-  }, []);
+  }, [supabase]);
 
   async function save() {
     setMsg(null);

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getServerUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { countMatches } from "@/lib/draw-engine";
 import { calculatePool, distributePrizes } from "@/lib/prize-pool";
@@ -8,11 +8,9 @@ import { calculatePool, distributePrizes } from "@/lib/prize-pool";
  * Admin-only: publish a simulated draw → calculates winners, prizes, and creates winner rows.
  */
 export async function POST(req: Request) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getServerUser();
   if (!user) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (user.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { drawId } = (await req.json()) as { drawId: string };
   const admin = createAdminClient();

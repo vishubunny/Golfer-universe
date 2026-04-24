@@ -1,7 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import type { Charity } from "@/types/db";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 export default async function CharitiesPage() {
@@ -15,7 +17,11 @@ export default async function CharitiesPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {charities.map(c => (
           <Link key={c.id} href={`/charities/${c.id}`} className="glass overflow-hidden hover:border-brand transition">
-            {c.image_url && <img src={c.image_url} alt={c.name} className="w-full h-44 object-cover" />}
+            {c.image_url && (
+              <div className="relative w-full h-44">
+                <Image src={c.image_url} alt={c.name} fill className="object-cover" />
+              </div>
+            )}
             <div className="p-5">
               <div className="flex items-center gap-2 mb-1">
                 {c.is_featured && <span className="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent">Featured</span>}

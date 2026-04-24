@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getServerUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { runDraw, type DrawLogic } from "@/lib/draw-engine";
@@ -9,11 +10,9 @@ import { calculatePool } from "@/lib/prize-pool";
  * Stores as draws.status = 'simulated' (overwriting prior simulation for that period).
  */
 export async function POST(req: Request) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getServerUser();
   if (!user) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (user.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { period, logic } = (await req.json()) as { period: string; logic: DrawLogic };
   const admin = createAdminClient();

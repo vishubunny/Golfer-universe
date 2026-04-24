@@ -1,23 +1,24 @@
-import { createClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
 import { formatCents } from "@/lib/utils";
 
-export default async function AdminOverview() {
-  const supabase = createClient();
-  const [{ count: users }, { count: activeSubs }, { data: pool }, { data: donations }] = await Promise.all([
-    supabase.from("profiles").select("*", { count: "exact", head: true }),
-    supabase.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
-    supabase.from("draws").select("pool_total_cents").order("created_at", { ascending: false }).limit(1),
-    supabase.from("donations").select("amount_cents")
-  ]);
-  const totalDonations = ((donations ?? []) as any[]).reduce((s: number, d: any) => s + d.amount_cents, 0);
+export default async function AdminPage() {
+  const db = getDb();
+
+  // Get stats from database
+  const usersCount = (db.prepare("SELECT COUNT(*) as count FROM profiles WHERE role = 'subscriber'").get() as any).count;
+  const activeSubsCount = (db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'").get() as any).count;
+  const latestPool = db.prepare("SELECT pool_total_cents FROM draws ORDER BY created_at DESC LIMIT 1").get() as any;
+  const donationsData = db.prepare("SELECT SUM(amount_cents) as total FROM donations WHERE amount_cents > 0").get() as any;
+
   const stats = [
-    { label: "Total users", value: users ?? 0 },
-    { label: "Active subscriptions", value: activeSubs ?? 0 },
-    { label: "Latest pool", value: formatCents(pool?.[0]?.pool_total_cents ?? 0) },
-    { label: "Total charity donations", value: formatCents(totalDonations) }
+    { label: "Total users", value: usersCount ?? 0 },
+    { label: "Active subscriptions", value: activeSubsCount ?? 0 },
+    { label: "Latest pool", value: formatCents(latestPool?.pool_total_cents ?? 0) },
+    { label: "Total charity donations", value: formatCents(donationsData?.total ?? 0) }
   ];
+
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
       {stats.map(s => (
         <div key={s.label} className="glass p-6">
           <p className="text-muted text-sm">{s.label}</p>
