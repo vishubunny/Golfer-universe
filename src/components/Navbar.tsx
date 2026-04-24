@@ -14,7 +14,7 @@ export function Navbar() {
     <header className="sticky top-0 z-30 backdrop-blur-md bg-black/30 border-b border-white/10">
       <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold">
-          <Heart className="size-5 text-accent" /> Digital Heroes
+          <Heart className="size-5 text-accent" /> Golf for good
         </Link>
         <div className="flex items-center gap-6">
           {links.map(l => (
